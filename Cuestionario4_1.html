@@ -12,8 +12,7 @@
         rel="stylesheet">
     <script type="text/javascript" src="jquery.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
+<style>
         :root {
             --primary-color: #2c3e50;
             --secondary-color: #3498db;
@@ -297,12 +296,12 @@
             text-decoration: none;
         }
     </style>
-</head>
+
+    </head>
 
 <body>
-    <div id="navbar-container" ></div>
+    <div id="navbar-container"></div>
 
-    
     <div class="container">
         <h3>Actividad 1: Cuestionario de verdadero y falso</h3>
         <br>
@@ -311,27 +310,10 @@
         <div class="instrucciones">
             <h5>Instrucciones</h5>
             <ol>
-                <li>Proceda a responder el cuestionario de verdadero y falso que consta de diez preguntas en total
-                    marcando
-                    la
-                    casilla que corresponda</li>
-                <li>Una vez que haya finalizado de marcar las casillas, puede dar clic en el botón "Validar respuestas"
-                    para
-                    revisar los resultados del cuestionario. Si desea restablecer las marcas de sus respuestas, puede
-                    dar
-                    clic
-                    en el botón "Resetear marcas".</li>
-                <li>Puede repetir la actividad las veces que considere necesario realizarla</li>
+                <li>Proceda a responder el cuestionario de verdadero y falso que consta de diez preguntas.</li>
+                <li>Haga clic en "Validar respuestas" para ver su resultado.</li>
+                <li>Use "Resetear marcas" para intentar nuevamente.</li>
             </ol>
-            <p><em>Es importante destacar que este cuestionario no tiene validez tanto en la calificación final como en
-                    la
-                    de
-                    cada parcial; su único propósito es servir como una herramienta de prueba para reforzar el
-                    aprendizaje
-                    que
-                    ha desarrollado hasta este punto. Utilice esta oportunidad para evaluar su comprensión y
-                    conocimientos.</em>
-            </p>
         </div>
 
         <form id="cuestionario">
@@ -403,8 +385,8 @@
         </form>
 
         <div class="botones">
-            <button class="btn-validar" type="button" id="validar" onclick="submitForm()">Validar respuestas</button>
-            <button class="btn-reset" type="button" id="resetear" onclick="reset()">Resetear marcas</button>
+            <button class="btn-validar" type="button" onclick="submitForm()">Validar respuestas</button>
+            <button class="btn-reset" type="button" onclick="reset()">Resetear marcas</button>
         </div>
 
         <div class="resultados" id="resultados">
@@ -419,75 +401,77 @@
 
     <div id="footer-container" ></div>
 
-    <script>
-        $(document).ready(function () {
-            fetch('navbar.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('navbar-container').innerHTML = data;
-                    initNavbarScripts(); // Si necesitas inicializar scripts del navbar
-                });
+<script>
+    const respuestas = {
+        pregunta1: 'true',
+        pregunta2: 'true',
+        pregunta3: 'true',
+        pregunta4: 'false',
+        pregunta5: 'false',
+        pregunta6: 'false',
+        pregunta7: 'true',
+        pregunta8: 'false',
+        pregunta9: 'false',
+        pregunta10: 'false',
+        pregunta11: 'false'
+    };
 
+    // Feedback personalizado para respuestas incorrectas
+    const feedbackExplicacion = {
+        pregunta1: "colocar feedback",
+        pregunta2: "colocar feedback",
+        pregunta3: "colocar feedback",
+        pregunta4: "colocar feedback",
+        pregunta5: "colocar feedback",
+        pregunta6: "colocar feedback",
+        pregunta7: "colocar feedback",
+        pregunta8: "colocar feedback",
+        pregunta9: "colocar feedback",
+        pregunta10: "colocar feedback",
+        pregunta11: "colocar feedback"
+    };
 
-            fetch('footer.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('footer-container').innerHTML = data;
-                });
-        });
-        const respuestas = {
-            pregunta1: 'true',
-            pregunta2: 'true',
-            pregunta3: 'true',
-            pregunta4: 'false',
-            pregunta5: 'false',
-            pregunta6: 'false',
-            pregunta7: 'true',
-            pregunta8: 'false',
-            pregunta9: 'false',
-            pregunta10: 'false',
-            pregunta11: 'false',
+    function submitForm() {
+        const totalPreguntas = Object.keys(respuestas).length;
+        let aciertos = 0;
 
-        }
+        // Limpia mensajes anteriores
+        $('.pregunta').find('.feedback').remove();
 
-        function submitForm() {
-            const totalPreguntas = Object.keys(respuestas).length;
-            var aciertos = 0;
-            //itera sobre las claves del objeto
-            for (const pregunta in respuestas) {
-                //console.log(pregunta);
+        for (const pregunta in respuestas) {
+            let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
 
-                let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
-
-                if (usuarioRes === undefined) {
-                    //console.log('efectivamente');
-                    $('#resultados').html(`<p class="alert alert-danger " style="margin:10px 0 0 0 " role="alert">Contesta todas las preguntas!</p>`);
-                    return;
-                }
-                //console.log(usuarioRes);
-                //console.log(usuarioRes == respuestas[pregunta]);
-                if (usuarioRes == respuestas[pregunta]) {
-                    aciertos++;
-                }
+            if (usuarioRes === undefined) {
+                $('#resultados').html(`<p class="alert alert-danger">Contesta todas las preguntas!</p>`);
+                return;
             }
 
-            $('#resultados').html(`<p class="alert alert-success " style="margin:10px 0 0 0 " role="alert">Tuvistre un puntaje de ${aciertos}!</p>`);
-
-            //console.log(aciertos);
-
+            if (usuarioRes == respuestas[pregunta]) {
+                aciertos++;
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`<p class="feedback text-success"><i class="bi bi-check-circle-fill"></i> ¡Correcto!</p>`);
+            } else {
+                const textoCorrecto = (respuestas[pregunta] === 'true') ? "Verdadero" : "Falso";
+                const explicacion = feedbackExplicacion[pregunta];
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`
+                        <p class="feedback text-danger">
+                            <i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>${textoCorrecto}</strong>.<br>
+                            <small class="text-muted">Explicación: ${explicacion}</small>
+                        </p>`);
+            }
         }
 
-        function reset() {
-            $('#resultados').html('');
-            $('input[type="radio"]').prop('checked', false);
-        }
+        $('#resultados').html(`<p class="alert alert-info">Obtuviste ${aciertos} de ${totalPreguntas} respuestas correctas.</p>`);
+    }
 
-    </script>
-
-
-
-    
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    function reset() {
+        $('input[type="radio"]').prop('checked', false);
+        $('.pregunta').find('.feedback').remove();
+        $('#resultados').html('');
+    }
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
@@ -496,6 +480,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-</body>
 
+</body>
 </html>
