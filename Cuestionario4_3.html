@@ -405,41 +405,60 @@
             pregunta6: 'true'
         }
 
-        function submitForm() {
-            const totalPreguntas = Object.keys(respuestas).length;
-            var aciertos = 0;
+// Feedback personalizado para respuestas incorrectas
+    const feedbackExplicacion = {
+        pregunta1: "colocar feedback",
+        pregunta2: "colocar feedback",
+        pregunta3: "colocar feedback",
+        pregunta4: "colocar feedback",
+        pregunta5: "colocar feedback",
+        pregunta6: "colocar feedback",
+        pregunta7: "colocar feedback",
+        pregunta8: "colocar feedback",
+        pregunta9: "colocar feedback",
+        pregunta10: "colocar feedback",
+        pregunta11: "colocar feedback"
+    };
 
-            for (const pregunta in respuestas) {
-                let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
+    function submitForm() {
+        const totalPreguntas = Object.keys(respuestas).length;
+        let aciertos = 0;
 
-                if (usuarioRes === undefined) {
-                    $('#resultados').html(`<div class="alert alert-danger">¡Debes responder todas las preguntas!</div>`);
-                    return;
-                }
+        // Limpia mensajes anteriores
+        $('.pregunta').find('.feedback').remove();
 
-                if (usuarioRes == respuestas[pregunta]) {
-                    aciertos++;
-                }
+        for (const pregunta in respuestas) {
+            let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
+
+            if (usuarioRes === undefined) {
+                $('#resultados').html(`<p class="alert alert-danger">Contesta todas las preguntas!</p>`);
+                return;
             }
 
-            const porcentaje = Math.round((aciertos / totalPreguntas) * 100);
-            let mensaje = '';
-
-            if (porcentaje >= 80) {
-                mensaje = `<div class="alert alert-success">Excelente! Obtuviste ${aciertos} de ${totalPreguntas} (${porcentaje}%)</div>`;
-            } else if (porcentaje >= 60) {
-                mensaje = `<div class="alert alert-info">Bien! Obtuviste ${aciertos} de ${totalPreguntas} (${porcentaje}%)</div>`;
+            if (usuarioRes == respuestas[pregunta]) {
+                aciertos++;
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`<p class="feedback text-success"><i class="bi bi-check-circle-fill"></i> ¡Correcto!</p>`);
             } else {
-                mensaje = `<div class="alert alert-warning">Obtuviste ${aciertos} de ${totalPreguntas} (${porcentaje}%). ¡Sigue practicando!</div>`;
+                const textoCorrecto = (respuestas[pregunta] === 'true') ? "Verdadero" : "Falso";
+                const explicacion = feedbackExplicacion[pregunta];
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`
+                        <p class="feedback text-danger">
+                            <i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>${textoCorrecto}</strong>.<br>
+                            <small class="text-muted">Explicación: ${explicacion}</small>
+                        </p>`);
             }
-
-            $('#resultados').html(mensaje);
         }
 
-        function reset() {
-            $('#resultados').html('');
-            $('input[type="radio"]').prop('checked', false);
-        }
+        $('#resultados').html(`<p class="alert alert-info">Obtuviste ${aciertos} de ${totalPreguntas} respuestas correctas.</p>`);
+    }
+
+    function reset() {
+        $('input[type="radio"]').prop('checked', false);
+        $('.pregunta').find('.feedback').remove();
+        $('#resultados').html('');
+    }        
     </script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
