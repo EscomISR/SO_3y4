@@ -462,41 +462,65 @@
                 pregunta10: 'true'
             };
 
-            // Validar respuestas al hacer clic en el botón
-            $('#validar').click(function () {
-                const totalPreguntas = Object.keys(respuestasCorrectas).length;
-                let correctas = 0;
-                let todasRespondidas = true;
 
-                // Verificar cada pregunta
-                for (let i = 1; i <= totalPreguntas; i++) {
-                        const pregunta = 'pregunta' + i;
-                        const respuestaUsuario = $(`input[name=${pregunta}]:checked`).val();
+ const feedbackExplicacion = {
+        pregunta1: "Feedback de la pregunta 1",
+        pregunta2: "Feedback de la pregunta 2",
+        pregunta3: "Feedback de la pregunta 3",
+        pregunta4: "Feedback de la pregunta 4",
+        pregunta5: "Feedback de la pregunta 5",
+        pregunta6: "Feedback de la pregunta 6",
+        pregunta7: "Feedback de la pregunta 7",
+	    pregunta8: "Feedback de la pregunta 8",
+	    pregunta9: "Feedback de la pregunta 9",
+	    pregunta10: "Feedback de la pregunta 10"
+	
+    };
 
-                        if (respuestaUsuario === undefined) {
-                            //console.log('efectivamente');
-                            $('#resultados').html(`<p class="alert alert-danger " style="margin:10px 0 0 0 " role="alert">Contesta todas las preguntas!</p>`);
-                            return;
-                        }
+    function submitForm() {
+        const totalPreguntas = Object.keys(respuestasCorrectas).length;
+        let aciertos = 0;
 
-                        if (respuestaUsuario == respuestasCorrectas[pregunta]) {
-                            correctas++;
-                        }
+        // Limpia mensajes anteriores
+        $('.pregunta').find('.feedback').remove();
 
-                        $('#resultados').html(`<p class="alert alert-success " style="margin:10px 0 0 0 " role="alert">Tuvistre un puntaje de ${correctas}!</p>`);
+        for (const pregunta in respuestasCorrectas) {
+            let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
 
+            if (usuarioRes === undefined) {
+                $('#resultados').html(`<p class="alert alert-danger">Contesta todas las preguntas!</p>`);
+                return;
+            }
 
-                    }
+            if (usuarioRes == respuestasCorrectas[pregunta]) {
+                aciertos++;
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`<p class="feedback text-success"><i class="bi bi-check-circle-fill"></i> ¡Correcto!</p>`);
+            } else {
+                const textoCorrecto = (respuestasCorrectas[pregunta] === 'true') ? "Verdadero" : "Falso";
+                const explicacion = feedbackExplicacion[pregunta];
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`
+                        <p class="feedback text-danger">
+                            <i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>${textoCorrecto}</strong>.<br>
+                            <small class="text-muted">Explicación: ${explicacion}</small>
+                        </p>`);
+            }
+        }
 
-            });
+        $('#resultados').html(`<p class="alert alert-info">Obtuviste ${aciertos} de ${totalPreguntas} respuestas correctas.</p>`);
+    }
 
-            // Reiniciar cuestionario
-            $('#resetear').click(function () {
-                $('input[type="radio"]').prop('checked', false);
-                $('input[type="radio"]').parent().css('background-color', '');
-                $('#resultados').fadeOut();
-            });
-        });
+    function reset() {
+        $('input[type="radio"]').prop('checked', false);
+        $('.pregunta').find('.feedback').remove();
+        $('#resultados').html('');
+    }
+
+    // Asignar eventos a los botones
+    $('#validar').click(submitForm);
+    $('#resetear').click(reset);
+});
     </script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
