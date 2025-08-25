@@ -446,36 +446,61 @@
             pregunta10: 'true'
         }
 
-        function submitForm() {
-            const totalPreguntas = Object.keys(respuestas).length;
-            var aciertos = 0;
-            //itera sobre las claves del objeto
-            for (const pregunta in respuestas) {
-                //console.log(pregunta);
+        // Feedback personalizado para respuestas incorrectas
+    const feedbackExplicacion = {
+        pregunta1: "colocar feedback",
+        pregunta2: "colocar feedback",
+        pregunta3: "colocar feedback",
+        pregunta4: "colocar feedback",
+        pregunta5: "colocar feedback",
+        pregunta6: "colocar feedback",
+        pregunta7: "colocar feedback",
+        pregunta8: "colocar feedback",
+        pregunta9: "colocar feedback",
+        pregunta10: "colocar feedback",
+        pregunta11: "colocar feedback"
+    };
 
-                let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
+    function submitForm() {
+        const totalPreguntas = Object.keys(respuestas).length;
+        let aciertos = 0;
 
-                if (usuarioRes === undefined) {
-                    //console.log('efectivamente');
-                    $('#resultados').html(`<p class="alert alert-danger " style="margin:10px 0 0 0 " role="alert">Contesta todas las preguntas!</p>`);
-                    return;
-                }
-                //console.log(usuarioRes);
-                //console.log(usuarioRes == respuestas[pregunta]);
-                if (usuarioRes == respuestas[pregunta]) {
-                    aciertos++;
-                }
+        // Limpia mensajes anteriores
+        $('.pregunta').find('.feedback').remove();
+
+        for (const pregunta in respuestas) {
+            let usuarioRes = $(`input[name=${pregunta}]:checked`).val();
+
+            if (usuarioRes === undefined) {
+                $('#resultados').html(`<p class="alert alert-danger">Contesta todas las preguntas!</p>`);
+                return;
             }
 
-            $('#resultados').html(`<p class="alert alert-success " style="margin:10px 0 0 0 " role="alert">Tuviste un puntaje de ${aciertos} de ${totalPreguntas}!</p>`);
-
-            //console.log(aciertos);
+            if (usuarioRes == respuestas[pregunta]) {
+                aciertos++;
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`<p class="feedback text-success"><i class="bi bi-check-circle-fill"></i> ¡Correcto!</p>`);
+            } else {
+                const textoCorrecto = (respuestas[pregunta] === 'true') ? "Verdadero" : "Falso";
+                const explicacion = feedbackExplicacion[pregunta];
+                $(`input[name=${pregunta}]`).closest('.pregunta')
+                    .append(`
+                        <p class="feedback text-danger">
+                            <i class="bi bi-x-circle-fill"></i> Incorrecto. La respuesta correcta es: <strong>${textoCorrecto}</strong>.<br>
+                            <small class="text-muted">Explicación: ${explicacion}</small>
+                        </p>`);
+            }
         }
 
-        function reset() {
-            $('#resultados').html('');
-            $('input[type="radio"]').prop('checked', false);
-        }
+        $('#resultados').html(`<p class="alert alert-info">Obtuviste ${aciertos} de ${totalPreguntas} respuestas correctas.</p>`);
+    }
+
+    function reset() {
+        $('input[type="radio"]').prop('checked', false);
+        $('.pregunta').find('.feedback').remove();
+        $('#resultados').html('');
+    }
+</script>
     </script>
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
